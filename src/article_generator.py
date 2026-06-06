@@ -3,6 +3,7 @@
 """
 
 import os
+import time
 import logging
 from google import genai
 from google.genai import types
@@ -59,14 +60,25 @@ def generate_article(genre: dict, news_items: list[dict]) -> dict:
     )
 
     logger.info("Gemini APIで記事生成中...")
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=0.8,
-            max_output_tokens=4096,
-        )
-    )
+    response = None
+    for attempt in range(3):
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0.8,
+                    max_output_tokens=4096,
+                )
+            )
+            break
+        except Exception as e:
+            if "503" in str(e) and attempt < 2:
+                wait = (attempt + 1) * 30
+                logger.warning(f"503エラー。{wait}秒後にリトライ ({attempt+1}/3)...")
+                time.sleep(wait)
+            else:
+                raise
 
     article = _parse(response.text, genre)
     logger.info(f"タイトル: {article['title']} / {len(article['body'])}文字")
