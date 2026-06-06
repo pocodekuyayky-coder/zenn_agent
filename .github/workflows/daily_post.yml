@@ -1,0 +1,46 @@
+name: Zenn 自動投稿
+
+on:
+  schedule:
+    # 毎日 日本時間 00:00 (UTC 15:00)
+    - cron: "0 15 * * *"
+  workflow_dispatch:
+
+jobs:
+  post-article:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python セットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 依存パッケージをインストール
+        run: pip install -r requirements.txt
+
+      - name: 投稿履歴を復元
+        uses: actions/cache@v4
+        with:
+          path: data/
+          key: zenn-data-${{ github.run_number }}
+          restore-keys: |
+            zenn-data-
+
+      - name: data ディレクトリを作成
+        run: mkdir -p data
+
+      - name: 記事を自動生成・投稿
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd src
+          python main.py
