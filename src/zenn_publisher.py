@@ -21,7 +21,7 @@ def publish_to_zenn(article: dict) -> bool:
     ARTICLES_DIR.mkdir(exist_ok=True)
 
     # ファイル名生成（日付+スラッグ）
-    date_str = datetime.now().strftime("%Y%m%d")
+    date_str = datetime.now().strftime("%Y%m%d%H%M")
     slug = _make_slug(article["title"], date_str)
     filepath = ARTICLES_DIR / f"{slug}.md"
 
