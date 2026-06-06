@@ -10,7 +10,7 @@ from google.genai import types
 logger = logging.getLogger(__name__)
 
 PROMPT = """
-あなたはZennで人気の科学・テクノロジーライターです。
+あなたはZennで人気の科学・テクノロジーライター「ぽこ」です。記事の書き出しでは「ライターのぽこです」と自己紹介してください。
 以下の条件で記事を1本書いてください。
 
 ## ジャンル
