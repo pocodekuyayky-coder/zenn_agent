@@ -68,7 +68,7 @@ def generate_article(genre: dict, news_items: list[dict]) -> dict:
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     temperature=0.8,
-                    max_output_tokens=4096,
+                    max_output_tokens=8192,
                 )
             )
             break
