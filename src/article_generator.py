@@ -11,39 +11,43 @@ from google.genai import types
 logger = logging.getLogger(__name__)
 
 PROMPT = """
-あなたはZennで人気の科学・テクノロジーライター「ぽこ」です。記事の書き出しでは「ライターのぽこです」と自己紹介してください。
+あなたはZennで人気の科学・テクノロジーライター「ぽこ」です。
 以下の条件で記事を1本書いてください。
 
 ## ジャンル
 {genre_name}
 
+## 今回のサブトピック
+{subtopic_name}
+
+## 今回の切り口
+{angle}
+
 ## 参考ニュース
 {news_summary}
 
 ## 執筆条件
-- 文字数: 1000〜2000文字
+- 文字数: 1200〜2000文字
 - 読者: テクノロジーに関心がある一般ビジネスパーソン
 - トーン: 親しみやすく知的。専門用語は噛み砕いて説明する
-- 構成:
-  1. 読者を引き込む書き出し
-  2. メインテーマの解説
-  3. 具体的なトピックの深掘り
-  4. まとめ・読者へのメッセージ
+- 書き出しは「ライターのぽこです。」で始める
+- 今回の切り口を意識した独自の視点・構成にする
+- 他の記事と差別化された内容にする
+- 構成は切り口に合わせて自由に工夫する（必ずしも同じ構成にしない）
 
 ## 出力形式（この形式のみ、他の文言は不要）
-TITLE: [タイトル（40文字以内）]
+TITLE: [タイトル（40文字以内、切り口を反映したキャッチーなもの）]
 BODY:
 [本文。見出しは##を使用。]
-TOPICS: [topic1,topic2,topic3（英語小文字、Zennの有効トピックのみ）]
-EMOJI: [1文字の絵文字]
+TOPICS: [topic1,topic2,topic3（英語小文字のみ、カンマ区切り、最大5つ）]
 """
 
 VALID_TOPICS = {
-    "energy": ["energy", "sustainability", "tech"],
-    "ai": ["ai", "machinelearning", "tech", "python"]
+    "energy": ["energy", "sustainability", "tech", "hydrogen", "nuclear"],
+    "ai": ["ai", "machinelearning", "tech", "python", "deeplearning"]
 }
 
-def generate_article(genre: dict, news_items: list[dict]) -> dict:
+def generate_article(genre: dict, subtopic: dict, angle: str, emoji: str, news_items: list[dict]) -> dict:
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
     if news_items:
@@ -52,10 +56,12 @@ def generate_article(genre: dict, news_items: list[dict]) -> dict:
             for i in news_items[:5]
         ])
     else:
-        news_summary = f"キーワード参考: {', '.join(genre['keywords'][:5])}"
+        news_summary = f"キーワード参考: {', '.join(subtopic['keywords'][:4])}"
 
     prompt = PROMPT.format(
         genre_name=genre["name"],
+        subtopic_name=subtopic["name"],
+        angle=angle,
         news_summary=news_summary
     )
 
@@ -67,7 +73,7 @@ def generate_article(genre: dict, news_items: list[dict]) -> dict:
                 model="gemini-2.5-flash",
                 contents=prompt,
                 config=types.GenerateContentConfig(
-                    temperature=0.8,
+                    temperature=0.9,
                     max_output_tokens=8192,
                 )
             )
@@ -80,12 +86,12 @@ def generate_article(genre: dict, news_items: list[dict]) -> dict:
             else:
                 raise
 
-    article = _parse(response.text, genre)
+    article = _parse(response.text, genre, emoji)
     logger.info(f"タイトル: {article['title']} / {len(article['body'])}文字")
     return article
 
-def _parse(raw: str, genre: dict) -> dict:
-    title, body, emoji = "", "", "📝"
+def _parse(raw: str, genre: dict, emoji: str) -> dict:
+    title, body = "", ""
     topics = VALID_TOPICS.get(genre["id"], ["tech"])
     mode = None
     body_lines = []
@@ -98,12 +104,9 @@ def _parse(raw: str, genre: dict) -> dict:
         elif line.startswith("TOPICS:"):
             mode = None
             raw_topics = line.replace("TOPICS:", "").strip()
-            parsed = [t.strip() for t in raw_topics.split(",") if t.strip()]
+            parsed = [t.strip().lower() for t in raw_topics.split(",") if t.strip()]
             if parsed:
                 topics = parsed[:5]
-        elif line.startswith("EMOJI:"):
-            mode = None
-            emoji = line.replace("EMOJI:", "").strip()[:1] or "📝"
         elif mode == "body":
             body_lines.append(line)
 
