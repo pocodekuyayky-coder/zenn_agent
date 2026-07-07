@@ -39,14 +39,16 @@ GENRES = [
         "id": "ai",
         "name": "AI・人工知能",
         "subtopics": [
-            {"name": "生成AI・大規模言語モデル", "keywords": ["生成AI 最新", "GPT-4", "Claude AI", "大規模言語モデル"]},
-            {"name": "画像・動画生成AI", "keywords": ["画像生成AI", "Stable Diffusion", "Sora", "動画生成AI"]},
-            {"name": "AIとビジネス活用", "keywords": ["AI ビジネス活用", "生成AI 業務効率化", "AI ROI", "企業AI導入"]},
-            {"name": "AI規制・倫理・安全性", "keywords": ["AI規制", "EU AI法", "AIガバナンス", "AI安全性"]},
-            {"name": "AIエージェント・自律AI", "keywords": ["AIエージェント", "AutoGPT", "自律型AI", "マルチエージェント"]},
-            {"name": "医療・ヘルスケアAI", "keywords": ["医療AI", "ヘルスケアAI", "AI診断", "創薬AI"]},
-            {"name": "教育・学習へのAI活用", "keywords": ["教育AI", "AI 学習", "EdTech", "AI家庭教師"]},
-            {"name": "日本のAI戦略", "keywords": ["日本 AI戦略", "AI 日本企業", "生成AI 日本", "AI政策 日本"]},
+            {"name": "生成AI全般・最新動向", "keywords": ["生成AI 最新", "Claude Anthropic", "Llama Meta", "Mistral AI", "生成AI比較"]},
+            {"name": "画像・動画・音声生成AI", "keywords": ["画像生成AI 最新", "Midjourney", "動画生成AI", "音声生成AI", "マルチモーダルAI"]},
+            {"name": "AIコーディングツール", "keywords": ["Cursor AI", "GitHub Copilot", "AIコーディング", "Devin AI", "AIプログラミング"]},
+            {"name": "AI検索・情報収集ツール", "keywords": ["Perplexity AI", "AI検索エンジン", "Grok xAI", "AI情報収集", "検索AI比較"]},
+            {"name": "AIとビジネス活用", "keywords": ["AI ビジネス活用", "生成AI 業務効率化", "AI ROI", "企業AI導入 事例"]},
+            {"name": "AI規制・倫理・安全性", "keywords": ["AI規制 最新", "EU AI法", "AIガバナンス", "AI安全性 研究"]},
+            {"name": "AIエージェント・自律AI", "keywords": ["AIエージェント 最新", "自律型AI", "マルチエージェント", "AI workflow"]},
+            {"name": "医療・ヘルスケアAI", "keywords": ["医療AI 最新", "ヘルスケアAI", "AI診断", "創薬AI"]},
+            {"name": "教育・学習へのAI活用", "keywords": ["教育AI", "AI 学習支援", "EdTech AI", "AI家庭教師"]},
+            {"name": "オープンソースAI・競争", "keywords": ["オープンソースAI", "AI競争 2025", "中国AI DeepSeek", "Gemini Claude GPT Grok 比較"]},
         ],
         "topics": ["ai", "machinelearning", "tech"],
         "emoji_list": ["🤖", "🧠", "💻", "🔮", "📊", "🚀", "🎯", "✨"]
@@ -66,7 +68,7 @@ ANGLES = [
     "コスト・経済性の観点から分析する記事",
 ]
 
-def select_genre_and_subtopic() -> tuple[dict, dict, str]:
+def select_genre_and_subtopic():
     """曜日でジャンルを切り替え、サブトピックと切り口をランダムに選択"""
     weekday = datetime.now().weekday()
     genre = GENRES[0] if weekday in [0, 2, 4] else GENRES[1]
