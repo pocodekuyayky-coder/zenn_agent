@@ -34,11 +34,13 @@ PROMPT = """
 - 今回の切り口を意識した独自の視点・構成にする
 - 他の記事と差別化された内容にする
 - 構成は切り口に合わせて自由に工夫する（必ずしも同じ構成にしない）
+- 太字（**テキスト**）は絶対に使用しない
+- 強調したい内容は見出し（##）や箇条書き（-）で表現する
 
 ## 出力形式（この形式のみ、他の文言は不要）
 TITLE: [タイトル（40文字以内、切り口を反映したキャッチーなもの）]
 BODY:
-[本文。見出しは##を使用。]
+[本文。見出しは##を使用。太字は使用しない。]
 TOPICS: [topic1,topic2,topic3（英語小文字のみ、カンマ区切り、最大5つ）]
 """
 
@@ -108,6 +110,8 @@ def _parse(raw: str, genre: dict, emoji: str) -> dict:
             if parsed:
                 topics = parsed[:5]
         elif mode == "body":
+            # 太字記法を除去（念のため）
+            line = line.replace("**", "")
             body_lines.append(line)
 
     body = "\n".join(body_lines).strip()
