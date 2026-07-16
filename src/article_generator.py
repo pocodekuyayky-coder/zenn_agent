@@ -36,6 +36,8 @@ PROMPT = """
 - 構成は切り口に合わせて自由に工夫する（必ずしも同じ構成にしない）
 - 太字（**テキスト**）は絶対に使用しない
 - 強調したい内容は見出し（##）や箇条書き（-）で表現する
+- AIに関する記事の場合、ChatGPTやGeminiだけでなく、Claude、Copilot、Perplexity、Grok、Cursor、Llama、Mistral、DeepSeekなど多様なAIツール・モデルを積極的に取り上げること
+- 特定のAIツールに偏らず、複数のサービスや技術を比較・紹介する視点を持つこと
 
 ## 出力形式（この形式のみ、他の文言は不要）
 TITLE: [タイトル（40文字以内、切り口を反映したキャッチーなもの）]
@@ -110,7 +112,7 @@ def _parse(raw: str, genre: dict, emoji: str) -> dict:
             if parsed:
                 topics = parsed[:5]
         elif mode == "body":
-            # 太字記法を除去（念のため）
+            # 太字記法を除去
             line = line.replace("**", "")
             body_lines.append(line)
 
