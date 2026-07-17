@@ -33,11 +33,14 @@ def _build_zenn_markdown(article: dict) -> str:
     topics = article.get("topics", ["tech"])
     emoji = article.get("emoji", "📝")
 
-    # トピックを正しいYAML形式に変換（角括弧なし）
+    # タイトルのダブルクォートをシングルクォートに置換（YAML崩れ防止）
+    title = article['title'].replace('"', "'")
+
+    # トピックを正しいYAML形式に変換
     topics_str = "\n".join([f"  - {t}" for t in topics[:5]])
 
     content = f"""---
-title: "{article['title']}"
+title: "{title}"
 emoji: "{emoji}"
 type: "idea"
 topics:
